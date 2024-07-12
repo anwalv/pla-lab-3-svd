@@ -48,8 +48,8 @@ def svd(A):
         singular_values = np.sqrt(eigenvalues_r)
         print("singular values r= ", singular_values)
 
-    normalized_eigenvectors_l = np.abs(eigenvectors_l) / np.linalg.norm(eigenvectors_l, axis=0)
-    normalized_eigenvectors_r = np.abs(eigenvectors_r) / np.linalg.norm(eigenvectors_r, axis=0)
+    normalized_eigenvectors_l = eigenvectors_l / np.linalg.norm(eigenvectors_l, axis=0)
+    normalized_eigenvectors_r = eigenvectors_r/ np.linalg.norm(eigenvectors_r, axis=0)
     print("normalized_eigenvectors_l= ", normalized_eigenvectors_l)
     print("normalized_eigenvectors_r= ", normalized_eigenvectors_r)
     U = normalized_eigenvectors_l
@@ -61,9 +61,8 @@ def svd(A):
 
     return U, M, V.T, new_A
 
-A = np.array([[4, 2],
-              [6, 3],
-              [9, 4]])
+A = np.array([[3, 2, 2],
+              [2, 3, -2]])
 
 U, M, V_T, new_A = svd(A)
 print("A = ", A)

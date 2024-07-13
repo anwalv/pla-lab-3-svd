@@ -16,53 +16,54 @@ def svd(A):
     print("n= ", n)
     print("-----------------")
     transpose_matrix = np.transpose(A)
+    U = np.zeros((m, m))
+    V_T = np.zeros((n, n))
 
-    left_defined_matrix = np.dot(A, transpose_matrix)  # m x m
-    right_defined_matrix = np.dot(transpose_matrix, A)  # n x n
-    print("left defined matrix= ", left_defined_matrix)
+    if m>=n:
+        our_matrix = np.dot(transpose_matrix, A)  # n x n
+        print("right defined matrix= ", our_matrix)
+        print("-----------------")
+    elif m<n:
+        our_matrix = np.dot(A, transpose_matrix)  # m x m
+        print("left defined matrix= ", our_matrix)
+        print("-----------------")
+
+    eigenvalues, eigenvectors = np.linalg.eig(our_matrix)
+    print("eigenvalues = ", eigenvalues)
+    print("eigenvectors = ", eigenvectors)
     print("-----------------")
-    print("right defined matrix= ", right_defined_matrix)
-    print("-----------------")
+    idx_l = eigenvalues.argsort()[::-1]  
+    eigenvalues = eigenvalues[idx_l]
+    eigenvectors = eigenvectors[:, idx_l]
 
-    eigenvalues_l, eigenvectors_l = np.linalg.eig(left_defined_matrix)
-    eigenvalues_r, eigenvectors_r = np.linalg.eig(right_defined_matrix)
-    print("eigenvalues l= ", eigenvalues_l)
-    print("eigenvectors l= ", eigenvectors_l)
-    print("-----------------")
-    
-    print("eigenvalues r= ", eigenvalues_r)
-    print("eigenvectors r= ", eigenvectors_r)
-    print(eigenvalues_r, eigenvectors_r)
-    idx_l = eigenvalues_l.argsort()[::-1]  
-    eigenvalues_l = eigenvalues_l[idx_l]
-    eigenvectors_l = eigenvectors_l[:, idx_l]
-    
-    idx_r = eigenvalues_r.argsort()[::-1] 
-    eigenvalues_r = eigenvalues_r[idx_r]
-    eigenvectors_r = eigenvectors_r[:, idx_r]
-
-    if n >= m:
-        singular_values = np.sqrt(eigenvalues_l)
-        print("singular values l= ", singular_values)
-    else:
-        singular_values = np.sqrt(eigenvalues_r)
-        print("singular values r= ", singular_values)
-
-    normalized_eigenvectors_l = eigenvectors_l / np.linalg.norm(eigenvectors_l, axis=0)
-    normalized_eigenvectors_r = eigenvectors_r/ np.linalg.norm(eigenvectors_r, axis=0)
-    print("normalized_eigenvectors_l= ", normalized_eigenvectors_l)
-    print("normalized_eigenvectors_r= ", normalized_eigenvectors_r)
-    U = normalized_eigenvectors_l
-    V = normalized_eigenvectors_r
+    singular_values = np.sqrt(eigenvalues)
+    print("singular values = ", singular_values)
     M = np.zeros((m, n))
     M[:min(m, n), :min(m, n)] = np.diag(singular_values)
     print("m:", M)
-    new_A = np.dot(U, np.dot(M, V.T))
 
-    return U, M, V.T, new_A
+    normalized_eigenvectors= eigenvectors/ np.linalg.norm(eigenvectors, axis=0)
+    print("normalized_eigenvectors = ", normalized_eigenvectors)
+    if m <= n:
+        U = normalized_eigenvectors
+        reconstructed_V = np.zeros_like(V_T)
+        for i in range(len(singular_values)):
+            u_i = U[:, i]
+            sigma_i = singular_values[i]
+            A_T_u_i = np.dot(A.T, u_i)
+            v_i = A_T_u_i / sigma_i
+            reconstructed_V[:, i] = v_i
 
-A = np.array([[3, 2, 2],
-              [2, 3, -2]])
+    elif m > n:
+        V = normalized_eigenvectors
+        U = np.dot(A, V.T) / singular_values[:, np.newaxis]
+
+    new_A = np.dot(U, np.dot(M, reconstructed_V))
+
+    return U, M, reconstructed_V.T, new_A
+
+A = np.array([[3, 2],
+              [1, 5]])
 
 U, M, V_T, new_A = svd(A)
 print("A = ", A)
@@ -74,4 +75,3 @@ print("----------------------------------")
 print("V tranposed =\n", V_T)
 print("----------------------------------")
 print("new A =\n", new_A)
-

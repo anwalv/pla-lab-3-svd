@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.sparse.linalg import svds
-file_path = '/ratings.csv'
+file_path = 'C:/Users/User/PycharmProjects/lab-3-svd/ratings.csv'
 df = pd.read_csv(file_path)
 ratings_matrix = df.pivot(index='userId', columns='movieId', values='rating')
 

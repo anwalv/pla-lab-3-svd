@@ -17,7 +17,7 @@ def svd(A):
     print("-----------------")
     transpose_matrix = np.transpose(A)
     U = np.zeros((m, m))
-    V_T = np.zeros((n, n))
+    V = np.zeros((n, n))
 
     if m>=n:
         our_matrix = np.dot(transpose_matrix, A)  # n x n
@@ -44,34 +44,39 @@ def svd(A):
 
     normalized_eigenvectors= eigenvectors/ np.linalg.norm(eigenvectors, axis=0)
     print("normalized_eigenvectors = ", normalized_eigenvectors)
-    if m <= n:
+    if m < n:
         U = normalized_eigenvectors
-        reconstructed_V = np.zeros_like(V_T)
         for i in range(len(singular_values)):
             u_i = U[:, i]
             sigma_i = singular_values[i]
             A_T_u_i = np.dot(A.T, u_i)
             v_i = A_T_u_i / sigma_i
-            reconstructed_V[:, i] = v_i
+            V[:, i] = v_i
 
-    elif m > n:
+    elif m >= n:
         V = normalized_eigenvectors
-        U = np.dot(A, V.T) / singular_values[:, np.newaxis]
+        for i in range(len(singular_values)):
+            v_i = V[:, i]
+            sigma_i = singular_values[i]
+            A_v_i = np.dot(A, v_i)
+            u_i = A_v_i / sigma_i
+            U[:, i] = u_i
 
-    new_A = np.dot(U, np.dot(M, reconstructed_V))
+    new_A = np.dot(U, np.dot(M, V))
 
-    return U, M, reconstructed_V.T, new_A
+    return U, M, V, new_A
 
 A = np.array([[3, 2],
-              [1, 5]])
+              [1, 9],
+              [4, 1]])
 
-U, M, V_T, new_A = svd(A)
+U, M, V, new_A = svd(A)
 print("A = ", A)
 print("----------------------------------")
 print("U =\n", U)
 print("----------------------------------")
 print("M =\n", M)
 print("----------------------------------")
-print("V tranposed =\n", V_T)
+print("V tranposed =\n", V)
 print("----------------------------------")
 print("new A =\n", new_A)

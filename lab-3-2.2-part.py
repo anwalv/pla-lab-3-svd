@@ -38,3 +38,9 @@ def top_10_movies(user_id):
     user_predicted_ratings = predicted_ratings_only.loc[user_id].sort_values(ascending=False)
     top_ten_movies = user_predicted_ratings.head(10)
     top_n_movies_info = movies_df[movies_df['movieId'].isin(top_ten_movies.index)][['title', 'genres']]
+    return top_n_movies_info
+
+user_id = 56
+recomendation = top_10_movies(user_id)
+print(f"Top 10 recommended movies for user {user_id}:")
+print(recomendation)
